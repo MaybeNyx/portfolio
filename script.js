@@ -2,89 +2,48 @@
    NYX PORTFOLIO
 ======================================== */
 
+
+/* ========================================
+   SUPABASE
+======================================== */
+
+const SUPABASE_URL =
+    "https://ybmcroqgqlzxgnrvxebm.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_fJ10fiAm2QX3rokEVW7_zw_GiMwOLz6";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* ========================================
+   DOM READY
+======================================== */
+
 document.addEventListener(
     "DOMContentLoaded",
     () => {
 
 
         /* ========================================
-           SUPABASE / PAGE VIEW COUNTER
+           VIEW COUNTER
         ======================================== */
 
-        /*
-         * REMPLACE CES DEUX VALEURS
-         * par celles de ton projet Supabase.
-         */
-
-        const SUPABASE_URL =
-            "https://ybmcroqgqlzxgnrvxebm.supabase.co/";
-
-        const SUPABASE_KEY =
-            "sb_publishable_fJ10fiAm2QX3rokEVW7_zw_GiMwOLz6";
-
-
-        let supabaseClient = null;
-
-
-        /*
-         * Vérification de Supabase
-         */
-
-        if (
-            typeof window.supabase !== "undefined" &&
-            SUPABASE_URL !== "TON_URL_SUPABASE" &&
-            SUPABASE_KEY !== "TA_CLE_PUBLISHABLE"
-        ) {
-
-            supabaseClient =
-                window.supabase.createClient(
-                    SUPABASE_URL,
-                    SUPABASE_KEY
-                );
-
-        } else {
-
-            console.error(
-                "Supabase n'est pas correctement configuré."
-            );
-
-        }
-
-
-        /*
-         * Élément qui affiche le nombre de vues
-         */
-
-        const viewCount =
+        const viewCountElement =
             document.getElementById(
                 "view-count"
             );
 
 
-        /*
-         * Mise à jour du compteur
-         */
-
         async function updateViewCounter() {
 
-            if (!viewCount) {
-
-                console.error(
-                    "Élément #view-count introuvable."
-                );
-
+            if (!viewCountElement) {
                 return;
-
-            }
-
-
-            if (!supabaseClient) {
-
-                viewCount.textContent =
-                    "—";
-
-                return;
-
             }
 
 
@@ -94,23 +53,20 @@ document.addEventListener(
                     data,
                     error
                 } =
-                    await supabaseClient.rpc(
-                        "increment_views"
-                    );
+                    await supabaseClient
+                        .rpc(
+                            "increment_page_views"
+                        );
 
-
-                /*
-                 * Vérification d'erreur
-                 */
 
                 if (error) {
 
                     console.error(
-                        "Erreur Supabase lors de l'incrémentation des vues :",
+                        "Erreur compteur de vues :",
                         error
                     );
 
-                    viewCount.textContent =
+                    viewCountElement.textContent =
                         "—";
 
                     return;
@@ -118,95 +74,26 @@ document.addEventListener(
                 }
 
 
-                /*
-                 * La fonction SQL retourne normalement
-                 * directement le nouveau nombre.
-                 */
-
-                const count =
-                    Array.isArray(data)
-                        ? data[0]
-                        : data;
-
-
-                if (
-                    count === null ||
-                    count === undefined
-                ) {
-
-                    viewCount.textContent =
-                        "—";
-
-                    return;
-
-                }
-
-
-                /*
-                 * Affichage avec séparateur français
-                 *
-                 * Exemple :
-                 * 1247 → 1 247
-                 */
-
-                viewCount.textContent =
-                    Number(count).toLocaleString(
+                viewCountElement.textContent =
+                    Number(data).toLocaleString(
                         "fr-FR"
                     );
-
-
-                /*
-                 * Petite animation
-                 */
-
-                viewCount.classList.remove(
-                    "updated"
-                );
-
-
-                /*
-                 * Force le navigateur à
-                 * recalculer l'animation
-                 */
-
-                void viewCount.offsetWidth;
-
-
-                viewCount.classList.add(
-                    "updated"
-                );
-
-
-                setTimeout(
-                    () => {
-
-                        viewCount.classList.remove(
-                            "updated"
-                        );
-
-                    },
-                    450
-                );
 
 
             } catch (error) {
 
                 console.error(
-                    "Erreur compteur de vues :",
+                    "Impossible de contacter Supabase :",
                     error
                 );
 
-                viewCount.textContent =
+                viewCountElement.textContent =
                     "—";
 
             }
 
         }
 
-
-        /*
-         * Lancement du compteur
-         */
 
         updateViewCounter();
 
@@ -222,311 +109,207 @@ document.addEventListener(
 
 
         if (!canvas) {
+            return;
+        }
 
-            console.error(
-                "Canvas des particules introuvable."
+
+        const ctx =
+            canvas.getContext("2d");
+
+
+        let particles = [];
+
+
+        let mouse = {
+
+            x: null,
+
+            y: null,
+
+            radius: 180
+
+        };
+
+
+        let particlesEnabled = true;
+
+
+        function resizeCanvas() {
+
+            canvas.width =
+                window.innerWidth;
+
+            canvas.height =
+                window.innerHeight;
+
+
+            createParticles();
+
+        }
+
+
+        function createParticles() {
+
+            particles = [];
+
+
+            const amount =
+                Math.min(
+                    110,
+                    Math.floor(
+                        (
+                            window.innerWidth *
+                            window.innerHeight
+                        ) / 14000
+                    )
+                );
+
+
+            for (
+                let i = 0;
+                i < amount;
+                i++
+            ) {
+
+                particles.push({
+
+                    x:
+                        Math.random() *
+                        canvas.width,
+
+                    y:
+                        Math.random() *
+                        canvas.height,
+
+                    size:
+                        Math.random() *
+                        1.8 + 0.5,
+
+                    speedX:
+                        (
+                            Math.random() -
+                            0.5
+                        ) * 0.25,
+
+                    speedY:
+                        (
+                            Math.random() -
+                            0.5
+                        ) * 0.25,
+
+                    opacity:
+                        Math.random() *
+                        0.5 + 0.15
+
+                });
+
+            }
+
+        }
+
+
+        function drawParticles() {
+
+            if (!particlesEnabled) {
+
+                requestAnimationFrame(
+                    drawParticles
+                );
+
+                return;
+
+            }
+
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
             );
 
-        } else {
 
-            const ctx =
-                canvas.getContext("2d");
-
-
-            let particles = [];
-
-
-            let mouse = {
-
-                x: null,
-
-                y: null,
-
-                radius: 180
-
-            };
-
-
-            let particlesEnabled = true;
-
-
-            function resizeCanvas() {
-
-                canvas.width =
-                    window.innerWidth;
-
-                canvas.height =
-                    window.innerHeight;
-
-
-                createParticles();
-
-            }
-
-
-            function createParticles() {
-
-                particles = [];
-
-
-                const amount =
-                    Math.min(
-                        110,
-                        Math.floor(
-                            (
-                                window.innerWidth *
-                                window.innerHeight
-                            ) / 14000
-                        )
-                    );
-
-
-                for (
-                    let i = 0;
-                    i < amount;
-                    i++
-                ) {
-
-                    particles.push({
-
-                        x:
-                            Math.random() *
-                            canvas.width,
-
-                        y:
-                            Math.random() *
-                            canvas.height,
-
-                        size:
-                            Math.random() *
-                            1.8 + 0.5,
-
-                        speedX:
-                            (
-                                Math.random() -
-                                0.5
-                            ) * 0.25,
-
-                        speedY:
-                            (
-                                Math.random() -
-                                0.5
-                            ) * 0.25,
-
-                        opacity:
-                            Math.random() *
-                            0.5 + 0.15
-
-                    });
-
-                }
-
-            }
-
-
-            function drawParticles() {
-
-                if (!particlesEnabled) {
-
-                    requestAnimationFrame(
-                        drawParticles
-                    );
-
-                    return;
-
-                }
-
-
-                ctx.clearRect(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
+            const styles =
+                getComputedStyle(
+                    document.documentElement
                 );
 
 
-                const styles =
-                    getComputedStyle(
-                        document.documentElement
-                    );
-
-
-                const accentRGB =
-                    styles.getPropertyValue(
+            const accentRGB =
+                styles
+                    .getPropertyValue(
                         "--accent-rgb"
-                    ).trim();
+                    )
+                    .trim();
 
 
-                /*
-                 * UPDATE + DRAW PARTICLES
-                 */
+            particles.forEach(
+                (particle) => {
 
-                particles.forEach(
-                    (particle) => {
+                    particle.x +=
+                        particle.speedX;
 
-                        particle.x +=
-                            particle.speedX;
-
-                        particle.y +=
-                            particle.speedY;
+                    particle.y +=
+                        particle.speedY;
 
 
-                        /*
-                         * Screen wrapping
-                         */
+                    /* Screen wrapping */
 
-                        if (
-                            particle.x < -20
-                        ) {
+                    if (
+                        particle.x < -20
+                    ) {
 
-                            particle.x =
-                                canvas.width + 20;
-
-                        }
-
-
-                        if (
-                            particle.x >
-                            canvas.width + 20
-                        ) {
-
-                            particle.x = -20;
-
-                        }
-
-
-                        if (
-                            particle.y < -20
-                        ) {
-
-                            particle.y =
-                                canvas.height + 20;
-
-                        }
-
-
-                        if (
-                            particle.y >
-                            canvas.height + 20
-                        ) {
-
-                            particle.y = -20;
-
-                        }
-
-
-                        /*
-                         * Mouse interaction
-                         */
-
-                        if (
-                            mouse.x !== null &&
-                            mouse.y !== null
-                        ) {
-
-                            const dx =
-                                mouse.x -
-                                particle.x;
-
-
-                            const dy =
-                                mouse.y -
-                                particle.y;
-
-
-                            const distance =
-                                Math.sqrt(
-                                    dx * dx +
-                                    dy * dy
-                                );
-
-
-                            if (
-                                distance <
-                                mouse.radius &&
-                                distance > 0
-                            ) {
-
-                                const force =
-                                    (
-                                        mouse.radius -
-                                        distance
-                                    ) /
-                                    mouse.radius;
-
-
-                                particle.x -=
-                                    (
-                                        dx /
-                                        distance
-                                    ) *
-                                    force *
-                                    0.7;
-
-
-                                particle.y -=
-                                    (
-                                        dy /
-                                        distance
-                                    ) *
-                                    force *
-                                    0.7;
-
-                            }
-
-                        }
-
-
-                        /*
-                         * Particle
-                         */
-
-                        ctx.beginPath();
-
-
-                        ctx.arc(
-                            particle.x,
-                            particle.y,
-                            particle.size,
-                            0,
-                            Math.PI * 2
-                        );
-
-
-                        ctx.fillStyle =
-                            `rgba(${accentRGB}, ${particle.opacity})`;
-
-
-                        ctx.fill();
+                        particle.x =
+                            canvas.width + 20;
 
                     }
-                );
 
 
-                /*
-                 * PARTICLE CONNECTIONS
-                 */
+                    if (
+                        particle.x >
+                        canvas.width + 20
+                    ) {
 
-                for (
-                    let i = 0;
-                    i < particles.length;
-                    i++
-                ) {
+                        particle.x = -20;
 
-                    for (
-                        let j = i + 1;
-                        j < particles.length;
-                        j++
+                    }
+
+
+                    if (
+                        particle.y < -20
+                    ) {
+
+                        particle.y =
+                            canvas.height + 20;
+
+                    }
+
+
+                    if (
+                        particle.y >
+                        canvas.height + 20
+                    ) {
+
+                        particle.y = -20;
+
+                    }
+
+
+                    /* Mouse interaction */
+
+                    if (
+                        mouse.x !== null &&
+                        mouse.y !== null
                     ) {
 
                         const dx =
-                            particles[i].x -
-                            particles[j].x;
+                            mouse.x -
+                            particle.x;
 
 
                         const dy =
-                            particles[i].y -
-                            particles[j].y;
+                            mouse.y -
+                            particle.y;
 
 
                         const distance =
@@ -537,28 +320,195 @@ document.addEventListener(
 
 
                         if (
-                            distance < 115
+                            distance <
+                            mouse.radius &&
+                            distance > 0
+                        ) {
+
+                            const force =
+                                (
+                                    mouse.radius -
+                                    distance
+                                ) /
+                                mouse.radius;
+
+
+                            particle.x -=
+                                (
+                                    dx /
+                                    distance
+                                ) *
+                                force *
+                                0.7;
+
+
+                            particle.y -=
+                                (
+                                    dy /
+                                    distance
+                                ) *
+                                force *
+                                0.7;
+
+                        }
+
+                    }
+
+
+                    /* Particle */
+
+                    ctx.beginPath();
+
+
+                    ctx.arc(
+                        particle.x,
+                        particle.y,
+                        particle.size,
+                        0,
+                        Math.PI * 2
+                    );
+
+
+                    ctx.fillStyle =
+                        `rgba(${accentRGB}, ${particle.opacity})`;
+
+
+                    ctx.fill();
+
+                }
+            );
+
+
+            /* ========================================
+               PARTICLE CONNECTIONS
+            ======================================== */
+
+            for (
+                let i = 0;
+                i < particles.length;
+                i++
+            ) {
+
+                for (
+                    let j = i + 1;
+                    j < particles.length;
+                    j++
+                ) {
+
+                    const dx =
+                        particles[i].x -
+                        particles[j].x;
+
+
+                    const dy =
+                        particles[i].y -
+                        particles[j].y;
+
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
+                        );
+
+
+                    if (
+                        distance < 115
+                    ) {
+
+                        const opacity =
+                            (
+                                1 -
+                                distance / 115
+                            ) * 0.12;
+
+
+                        ctx.beginPath();
+
+
+                        ctx.moveTo(
+                            particles[i].x,
+                            particles[i].y
+                        );
+
+
+                        ctx.lineTo(
+                            particles[j].x,
+                            particles[j].y
+                        );
+
+
+                        ctx.strokeStyle =
+                            `rgba(${accentRGB}, ${opacity})`;
+
+
+                        ctx.lineWidth =
+                            0.6;
+
+
+                        ctx.stroke();
+
+                    }
+
+                }
+
+            }
+
+
+            /* ========================================
+               MOUSE CONNECTIONS
+            ======================================== */
+
+            if (
+                mouse.x !== null &&
+                mouse.y !== null
+            ) {
+
+                particles.forEach(
+                    (particle) => {
+
+                        const dx =
+                            mouse.x -
+                            particle.x;
+
+
+                        const dy =
+                            mouse.y -
+                            particle.y;
+
+
+                        const distance =
+                            Math.sqrt(
+                                dx * dx +
+                                dy * dy
+                            );
+
+
+                        if (
+                            distance <
+                            mouse.radius
                         ) {
 
                             const opacity =
                                 (
                                     1 -
-                                    distance / 115
-                                ) * 0.12;
+                                    distance /
+                                    mouse.radius
+                                ) * 0.35;
 
 
                             ctx.beginPath();
 
 
                             ctx.moveTo(
-                                particles[i].x,
-                                particles[i].y
+                                mouse.x,
+                                mouse.y
                             );
 
 
                             ctx.lineTo(
-                                particles[j].x,
-                                particles[j].y
+                                particle.x,
+                                particle.y
                             );
 
 
@@ -567,7 +517,7 @@ document.addEventListener(
 
 
                             ctx.lineWidth =
-                                0.6;
+                                0.8;
 
 
                             ctx.stroke();
@@ -575,266 +525,189 @@ document.addEventListener(
                         }
 
                     }
-
-                }
-
-
-                /*
-                 * MOUSE CONNECTIONS
-                 */
-
-                if (
-                    mouse.x !== null &&
-                    mouse.y !== null
-                ) {
-
-                    particles.forEach(
-                        (particle) => {
-
-                            const dx =
-                                mouse.x -
-                                particle.x;
+                );
 
 
-                            const dy =
-                                mouse.y -
-                                particle.y;
+                /* Mouse glow */
 
-
-                            const distance =
-                                Math.sqrt(
-                                    dx * dx +
-                                    dy * dy
-                                );
-
-
-                            if (
-                                distance <
-                                mouse.radius
-                            ) {
-
-                                const opacity =
-                                    (
-                                        1 -
-                                        distance /
-                                        mouse.radius
-                                    ) * 0.35;
-
-
-                                ctx.beginPath();
-
-
-                                ctx.moveTo(
-                                    mouse.x,
-                                    mouse.y
-                                );
-
-
-                                ctx.lineTo(
-                                    particle.x,
-                                    particle.y
-                                );
-
-
-                                ctx.strokeStyle =
-                                    `rgba(${accentRGB}, ${opacity})`;
-
-
-                                ctx.lineWidth =
-                                    0.8;
-
-
-                                ctx.stroke();
-
-                            }
-
-                        }
-                    );
-
-
-                    /*
-                     * Mouse glow
-                     */
-
-                    const gradient =
-                        ctx.createRadialGradient(
-                            mouse.x,
-                            mouse.y,
-                            0,
-                            mouse.x,
-                            mouse.y,
-                            100
-                        );
-
-
-                    gradient.addColorStop(
-                        0,
-                        `rgba(${accentRGB}, 0.10)`
-                    );
-
-
-                    gradient.addColorStop(
-                        1,
-                        `rgba(${accentRGB}, 0)`
-                    );
-
-
-                    ctx.beginPath();
-
-
-                    ctx.arc(
+                const gradient =
+                    ctx.createRadialGradient(
                         mouse.x,
                         mouse.y,
-                        100,
                         0,
-                        Math.PI * 2
+                        mouse.x,
+                        mouse.y,
+                        100
                     );
 
 
-                    ctx.fillStyle =
-                        gradient;
-
-
-                    ctx.fill();
-
-                }
-
-
-                requestAnimationFrame(
-                    drawParticles
+                gradient.addColorStop(
+                    0,
+                    `rgba(${accentRGB}, 0.10)`
                 );
+
+
+                gradient.addColorStop(
+                    1,
+                    `rgba(${accentRGB}, 0)`
+                );
+
+
+                ctx.beginPath();
+
+
+                ctx.arc(
+                    mouse.x,
+                    mouse.y,
+                    100,
+                    0,
+                    Math.PI * 2
+                );
+
+
+                ctx.fillStyle =
+                    gradient;
+
+
+                ctx.fill();
 
             }
 
 
-            /*
-             * MOUSE TRACKING
-             */
-
-            window.addEventListener(
-                "mousemove",
-                (event) => {
-
-                    mouse.x =
-                        event.clientX;
-
-                    mouse.y =
-                        event.clientY;
-
-                }
+            requestAnimationFrame(
+                drawParticles
             );
 
-
-            window.addEventListener(
-                "mouseleave",
-                () => {
-
-                    mouse.x = null;
-
-                    mouse.y = null;
-
-                }
-            );
+        }
 
 
-            window.addEventListener(
-                "resize",
-                resizeCanvas
-            );
+        /* ========================================
+           MOUSE TRACKING
+        ======================================== */
 
+        window.addEventListener(
+            "mousemove",
+            (event) => {
 
-            resizeCanvas();
+                mouse.x =
+                    event.clientX;
 
-            drawParticles();
-
-
-            /*
-             * PARTICLE TOGGLE
-             */
-
-            const particleToggle =
-                document.getElementById(
-                    "particle-toggle"
-                );
-
-
-            const savedParticleState =
-                localStorage.getItem(
-                    "nyx-particles"
-                );
-
-
-            if (
-                savedParticleState ===
-                "false"
-            ) {
-
-                particlesEnabled =
-                    false;
-
-
-                if (particleToggle) {
-
-                    particleToggle.classList.remove(
-                        "active"
-                    );
-
-                    particleToggle.setAttribute(
-                        "aria-pressed",
-                        "false"
-                    );
-
-                }
-
-
-                canvas.classList.add(
-                    "disabled"
-                );
+                mouse.y =
+                    event.clientY;
 
             }
+        );
+
+
+        window.addEventListener(
+            "mouseleave",
+            () => {
+
+                mouse.x = null;
+
+                mouse.y = null;
+
+            }
+        );
+
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
+
+
+        resizeCanvas();
+
+        drawParticles();
+
+
+        /* ========================================
+           PARTICLE TOGGLE
+        ======================================== */
+
+        const particleToggle =
+            document.getElementById(
+                "particle-toggle"
+            );
+
+
+        const savedParticleState =
+            localStorage.getItem(
+                "nyx-particles"
+            );
+
+
+        if (
+            savedParticleState ===
+            "false"
+        ) {
+
+            particlesEnabled =
+                false;
 
 
             if (particleToggle) {
 
-                particleToggle.addEventListener(
-                    "click",
-                    () => {
-
-                        particlesEnabled =
-                            !particlesEnabled;
+                particleToggle.classList.remove(
+                    "active"
+                );
 
 
-                        particleToggle.classList.toggle(
-                            "active",
-                            particlesEnabled
-                        );
-
-
-                        particleToggle.setAttribute(
-                            "aria-pressed",
-                            String(
-                                particlesEnabled
-                            )
-                        );
-
-
-                        canvas.classList.toggle(
-                            "disabled",
-                            !particlesEnabled
-                        );
-
-
-                        localStorage.setItem(
-                            "nyx-particles",
-                            String(
-                                particlesEnabled
-                            )
-                        );
-
-                    }
+                particleToggle.setAttribute(
+                    "aria-pressed",
+                    "false"
                 );
 
             }
+
+
+            canvas.classList.add(
+                "disabled"
+            );
+
+        }
+
+
+        if (particleToggle) {
+
+            particleToggle.addEventListener(
+                "click",
+                () => {
+
+                    particlesEnabled =
+                        !particlesEnabled;
+
+
+                    particleToggle.classList.toggle(
+                        "active",
+                        particlesEnabled
+                    );
+
+
+                    particleToggle.setAttribute(
+                        "aria-pressed",
+                        String(
+                            particlesEnabled
+                        )
+                    );
+
+
+                    canvas.classList.toggle(
+                        "disabled",
+                        !particlesEnabled
+                    );
+
+
+                    localStorage.setItem(
+                        "nyx-particles",
+                        String(
+                            particlesEnabled
+                        )
+                    );
+
+                }
+            );
 
         }
 
@@ -925,7 +798,6 @@ document.addEventListener(
                     orbOne.style.transform =
                         "translate(0, 0)";
 
-
                     orbTwo.style.transform =
                         "translate(0, 0)";
 
@@ -946,7 +818,8 @@ document.addEventListener(
 
 
         if (
-            "IntersectionObserver" in window
+            "IntersectionObserver"
+            in window
         ) {
 
             const observer =
@@ -988,20 +861,9 @@ document.addEventListener(
                         "animate-on-scroll"
                     );
 
+
                     observer.observe(
                         element
-                    );
-
-                }
-            );
-
-        } else {
-
-            animatedElements.forEach(
-                (element) => {
-
-                    element.classList.add(
-                        "visible"
                     );
 
                 }
@@ -1032,9 +894,7 @@ document.addEventListener(
 
 
                         if (!text) {
-
                             return;
-
                         }
 
 
@@ -1198,9 +1058,7 @@ document.addEventListener(
 
 
             if (!theme) {
-
                 return;
-
             }
 
 
