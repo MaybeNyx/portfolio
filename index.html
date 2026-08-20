@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Portfolio de Nyx — étudiant passionné par le développement, la cybersécurité, les réseaux et l'électronique."
+    >
+
+    <title>Nyx — Cybersecurity & Developer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ========================================
+         PARTICLE BACKGROUND
+    ========================================= -->
+
+    <canvas id="particle-canvas"></canvas>
+
+
+    <!-- ========================================
+         NAVIGATION
+    ========================================= -->
+
+    <header>
+
+<div class="view-counter" aria-label="Nombre de vues du portfolio">
+
+    <span class="view-icon" aria-hidden="true">
+        ◉
+    </span>
+
+    <div class="view-info">
+        <span class="view-label">
+            VUES
+        </span>
+
+        <span
+            class="view-count"
+            id="view-count"
+        >
+            ...
+        </span>
+    </div>
+
+</div>
+
+        <nav>
+
+            <a href="#home" class="logo">
+                Nyx<span>.</span>
+            </a>
+
+
+            <ul class="nav-links">
+
+                <li>
+                    <a href="#home">Accueil</a>
+                </li>
+
+                <li>
+                    <a href="#about">À propos</a>
+                </li>
+
+                <li>
+                    <a href="#skills">Compétences</a>
+                </li>
+
+                <li>
+                    <a href="#projects">Projets</a>
+                </li>
+
+                <li>
+                    <a href="#contact">Réseaux</a>
+                </li>
+
+            </ul>
+
+
+            <!-- ========================================
+                 CONTROLS
+            ========================================= -->
+
+            <div class="nav-controls">
+
+
+                <!-- PARTICLE TOGGLE -->
+
+                <button
+                    class="particle-toggle active"
+                    id="particle-toggle"
+                    type="button"
+                    aria-label="Activer ou désactiver les particules"
+                    aria-pressed="true"
+                >
+
+                    <span class="toggle-icon">
+                        ✦
+                    </span>
+
+                    <span class="toggle-label">
+                        FX
+                    </span>
+
+                    <span class="toggle-switch">
+
+                        <span class="toggle-circle"></span>
+
+                    </span>
+
+                </button>
+
+
+                <!-- THEME SWITCHER -->
+
+                <div class="theme-switcher">
+
+                    <button
+                        class="theme-button theme-purple active"
+                        data-theme="purple"
+                        aria-label="Thème violet"
+                        type="button"
+                    ></button>
+
+                    <button
+                        class="theme-button theme-blue"
+                        data-theme="blue"
+                        aria-label="Thème bleu"
+                        type="button"
+                    ></button>
+
+                    <button
+                        class="theme-button theme-green"
+                        data-theme="green"
+                        aria-label="Thème vert"
+                        type="button"
+                    ></button>
+
+                    <button
+                        class="theme-button theme-red"
+                        data-theme="red"
+                        aria-label="Thème rouge"
+                        type="button"
+                    ></button>
+
+                    <button
+                        class="theme-button theme-pink"
+                        data-theme="pink"
+                        aria-label="Thème rose"
+                        type="button"
+                    ></button>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <!-- ========================================
+             HERO
+        ========================================= -->
+
+        <section id="home" class="hero">
+
+            <div class="hero-grid"></div>
+
+            <div class="hero-orb orb-one"></div>
+
+            <div class="hero-orb orb-two"></div>
+
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+
+                    <span class="status-dot"></span>
+
+                    CURRENTLY LEARNING
+
+                </div>
+
+
+                <p class="hero-subtitle">
+                    CYBERSECURITY • DEVELOPMENT • NETWORKING
+                </p>
+
+
+                <h1>
+                    I'm <span>Nyx</span>.
+                </h1>
+
+
+                <h2 class="hero-title">
+                    Développeur et passionné de cybersécurité
+                </h2>
+
+
+                <p class="hero-description">
+                    Étudiant passionné par l'informatique,
+                    le développement, les réseaux et la cybersécurité.
+                    Toujours en train d'apprendre, d'expérimenter
+                    et de découvrir de nouvelles technologies.
+                </p>
+
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="#about"
+                        class="btn primary"
+                    >
+                        Découvrir mon univers
+                    </a>
+
+                    <a
+                        href="#projects"
+                        class="btn secondary"
+                    >
+                        Voir mes projets
+                    </a>
+
+                </div>
+
+
+                <!-- TERMINAL -->
+
+                <div class="hero-terminal">
+
+                    <div class="terminal-header">
+
+                        <div class="terminal-dots">
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+                        <p>
+                            nyx@portfolio:~
+                        </p>
+
+                    </div>
+
+
+                    <div class="terminal-body">
+
+                        <p>
+                            <span class="terminal-purple">nyx</span><span class="terminal-white">@</span><span class="terminal-blue">portfolio</span><span class="terminal-white">:~$</span>
+                            whoami
+                        </p>
+
+                        <p class="terminal-output">
+                            cybersecurity_student
+                        </p>
+
+
+                        <p>
+                            <span class="terminal-purple">nyx</span><span class="terminal-white">@</span><span class="terminal-blue">portfolio</span><span class="terminal-white">:~$</span>
+                            skills
+                        </p>
+
+                        <p class="terminal-output">
+                            C# · Lua · Python
+                        </p>
+
+
+                        <p>
+                            <span class="terminal-purple">nyx</span><span class="terminal-white">@</span><span class="terminal-blue">portfolio</span><span class="terminal-white">:~$</span>
+                            <span class="cursor"></span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             ABOUT
+        ========================================= -->
+
+        <section id="about" class="section">
+
+            <div class="section-label">
+                01 — A PROPOS
+            </div>
+
+
+            <h2>
+                À propos de <span>moi</span>
+            </h2>
+
+
+            <div class="about-card">
+
+                <p>
+                    Passionné par l'informatique depuis environ
+                    six ans, je m'intéresse particulièrement au
+                    développement, à la cybersécurité, aux réseaux
+                    et à l'électronique.
+                </p>
+
+
+                <p>
+                    J'aime coder, comprendre comment fonctionnent
+                    les systèmes, rechercher des vulnérabilités, développer des outils,
+                    expérimenter et apprendre constamment de
+                    nouvelles choses.
+                </p>
+
+
+                <p>
+                    Je suis actuellement étudiant et je vais
+                    commencer un Bac Pro CIEL — Cybersécurité,
+                    Informatique, Réseaux, Électronique.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             SKILLS
+        ========================================= -->
+
+        <section id="skills" class="section">
+
+            <div class="section-label">
+                02 — COMPETENCES
+            </div>
+
+
+            <h2>
+                Ce que <span>j'apprends</span>
+            </h2>
+
+
+            <div class="skills-container">
+
+                <div class="skill-card">
+
+                    <div class="skill-number">
+                        01
+                    </div>
+
+                    <h3>
+                        C#
+                    </h3>
+
+                    <p>
+                        Développement logiciel et apprentissage
+                        de la programmation orientée objet.
+                    </p>
+
+                    <span class="skill-level">
+                        INTERMEDIAIRE
+                    </span>
+
+                </div>
+
+
+                <div class="skill-card">
+
+                    <div class="skill-number">
+                        02
+                    </div>
+
+                    <h3>
+                        Lua
+                    </h3>
+
+                    <p>
+                        Exploration du langage et création
+                        de scripts et petits projets.
+                    </p>
+
+                    <span class="skill-level">
+                        INTERMEDIAIRE
+                    </span>
+
+                </div>
+
+
+                <div class="skill-card">
+
+                    <div class="skill-number">
+                        03
+                    </div>
+
+                    <h3>
+                        Python
+                    </h3>
+
+                    <p>
+                        Apprentissage de la programmation,
+                        automatisation et expérimentation.
+                    </p>
+
+                    <span class="skill-level">
+                        DEBUTANT
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             PROJECTS
+        ========================================= -->
+
+        <section id="projects" class="section">
+
+            <div class="section-label">
+                03 — PROJETS
+            </div>
+
+
+            <h2>
+                Mes <span>projets</span>
+            </h2>
+
+
+            <div class="projects-container">
+
+                <div class="project-card coming-soon">
+
+                    <div class="project-icon">
+                        +
+                    </div>
+
+
+                    <div>
+
+                        <span class="project-status">
+                            EN DEVELOPPEMENT
+                        </span>
+
+                        <h3>
+                            Code Obfuscator
+                        </h3>
+
+                        <p>
+                            Une application Windows codée en Python
+                            permettant l'obfuscation de script.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="project-card coming-soon">
+
+                    <div class="project-icon">
+                        ?
+                    </div>
+
+
+                    <div>
+
+                        <span class="project-status">
+                            EN DEVELOPPEMENT
+                        </span>
+
+                        <h3>
+                            Quelque chose arrive...
+                        </h3>
+
+                        <p>
+                            Cette section sera mise à jour
+                            lorsque j'aurai de nouveaux projets
+                            à présenter.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             SOCIALS
+        ========================================= -->
+
+        <section id="contact" class="section">
+
+            <div class="section-label">
+                04 — RÉSEAUX
+            </div>
+
+
+            <h2>
+                Retrouve <span>Moi</span>
+            </h2>
+
+
+            <p class="section-description">
+                Mes différents réseaux et plateformes.
+            </p>
+
+
+            <div class="socials">
+
+
+                <!-- TIKTOK -->
+
+                <a
+                    href="https://www.tiktok.com/@evn.gf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link"
+                >
+
+                    <span class="social-name">
+                        TikTok
+                    </span>
+
+                    <span class="social-username">
+                        @evn.gf
+                    </span>
+
+                    <span class="social-arrow">
+                        ↗
+                    </span>
+
+                </a>
+
+
+                <!-- YOUTUBE -->
+
+                <a
+                    href="https://www.youtube.com/@nyx24678"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link"
+                >
+
+                    <span class="social-name">
+                        YouTube
+                    </span>
+
+                    <span class="social-username">
+                        @nyx24678
+                    </span>
+
+                    <span class="social-arrow">
+                        ↗
+                    </span>
+
+                </a>
+
+
+                <!-- DISCORD -->
+
+                <div class="social-link discord">
+
+                    <div class="social-info">
+
+                        <span class="social-name">
+                            Discord
+                        </span>
+
+                        <span class="social-username">
+                            _24678
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="copy-button"
+                        data-copy="_24678"
+                        type="button"
+                    >
+                        Copier
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ========================================
+         FOOTER
+    ========================================= -->
+
+    <footer>
+
+        <p>
+            © 2026 Nyx
+        </p>
+
+        <p>
+            Built with HTML, CSS & JavaScript.
+        </p>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+
+</body>
+
+</html>
