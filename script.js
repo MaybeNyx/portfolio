@@ -10,6 +10,7 @@
 const SUPABASE_URL =
     "https://ybmcroqgqlzxgnrvxebm.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_fJ10fiAm2QX3rokEVW7_zw_GiMwOLz6";
 
@@ -30,72 +31,131 @@ document.addEventListener(
     () => {
 
 
-        /* ========================================
-           VIEW COUNTER
-        ======================================== */
+/* ========================================
+   VIEW COUNTER
+======================================== */
 
-        const viewCountElement =
-            document.getElementById(
-                "view-count"
+const viewCountElement =
+    document.getElementById("view-count");
+
+
+const VIEW_COOLDOWN = 15 * 60 * 1000; // 15 minutes
+
+const VIEW_STORAGE_KEY =
+    "nyx-last-view";
+
+
+async function updateViewCounter() {
+
+    if (!viewCountElement) {
+        return;
+    }
+
+
+    try {
+
+        /*
+         * Vérifie la dernière fois où
+         * ce navigateur a compté une vue.
+         */
+
+        const lastView =
+            localStorage.getItem(
+                VIEW_STORAGE_KEY
             );
 
 
-        async function updateViewCounter() {
-
-            if (!viewCountElement) {
-                return;
-            }
+        const now =
+            Date.now();
 
 
-            try {
+        /*
+         * Si une vue a déjà été comptée
+         * il y a moins de 15 minutes,
+         * on ne compte pas cette visite.
+         */
 
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient
-                        .rpc(
-                            "increment_page_views"
-                        );
+        if (
+            lastView &&
+            now - Number(lastView) <
+            VIEW_COOLDOWN
+        ) {
 
+            console.log(
+                "Vue non comptée : cooldown de 15 minutes actif."
+            );
 
-                if (error) {
-
-                    console.error(
-                        "Erreur compteur de vues :",
-                        error
-                    );
-
-                    viewCountElement.textContent =
-                        "—";
-
-                    return;
-
-                }
-
-
-                viewCountElement.textContent =
-                    Number(data).toLocaleString(
-                        "fr-FR"
-                    );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Impossible de contacter Supabase :",
-                    error
-                );
-
-                viewCountElement.textContent =
-                    "—";
-
-            }
+            return;
 
         }
 
 
-        updateViewCounter();
+        /*
+         * Appel Supabase
+         */
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .rpc(
+                    "increment_page_views"
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Erreur compteur de vues :",
+                error
+            );
+
+            viewCountElement.textContent =
+                "—";
+
+            return;
+
+        }
+
+
+        /*
+         * La vue a bien été comptée.
+         * On enregistre maintenant l'heure.
+         */
+
+        localStorage.setItem(
+            VIEW_STORAGE_KEY,
+            String(now)
+        );
+
+
+        /*
+         * Affichage du nombre de vues
+         */
+
+        viewCountElement.textContent =
+            Number(data).toLocaleString(
+                "fr-FR"
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            "Impossible de contacter Supabase :",
+            error
+        );
+
+        viewCountElement.textContent =
+            "—";
+
+    }
+
+}
+
+
+updateViewCounter();
 
 
         /* ========================================
@@ -797,6 +857,7 @@ document.addEventListener(
 
                     orbOne.style.transform =
                         "translate(0, 0)";
+
 
                     orbTwo.style.transform =
                         "translate(0, 0)";
