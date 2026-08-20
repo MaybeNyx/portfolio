@@ -17,7 +17,7 @@ document.addEventListener(
          */
 
         const SUPABASE_URL =
-            "https://ybmcroqgqlzxgnrvxebm.supabase.co/rest/v1/";
+            "https://ybmcroqgqlzxgnrvxebm.supabase.co/";
 
         const SUPABASE_KEY =
             "sb_publishable_fJ10fiAm2QX3rokEVW7_zw_GiMwOLz6";
