@@ -39,11 +39,64 @@ const viewCountElement =
     document.getElementById("view-count");
 
 
-const VIEW_COOLDOWN = 15 * 60 * 1000; // 15 minutes
+const VIEW_COOLDOWN =
+    15 * 60 * 1000; // 15 minutes
+
 
 const VIEW_STORAGE_KEY =
     "nyx-last-view";
 
+
+/* ========================================
+   GET CURRENT VIEW COUNT
+======================================== */
+
+async function getViewCount() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("page_views")
+                .select("views")
+                .eq("id", 1)
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                "Erreur récupération compteur :",
+                error
+            );
+
+            return null;
+
+        }
+
+
+        return Number(data.views);
+
+    } catch (error) {
+
+        console.error(
+            "Impossible de récupérer le compteur :",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* ========================================
+   UPDATE VIEW COUNTER
+======================================== */
 
 async function updateViewCounter() {
 
@@ -54,10 +107,9 @@ async function updateViewCounter() {
 
     try {
 
-        /*
-         * Vérifie la dernière fois où
-         * ce navigateur a compté une vue.
-         */
+        const now =
+            Date.now();
+
 
         const lastView =
             localStorage.getItem(
@@ -65,85 +117,101 @@ async function updateViewCounter() {
             );
 
 
-        const now =
-            Date.now();
-
-
-        /*
-         * Si une vue a déjà été comptée
-         * il y a moins de 15 minutes,
-         * on ne compte pas cette visite.
-         */
-
-        if (
+        const cooldownActive =
             lastView &&
             now - Number(lastView) <
-            VIEW_COOLDOWN
-        ) {
+            VIEW_COOLDOWN;
+
+
+        /* ========================================
+           COUNT NEW VIEW
+        ======================================== */
+
+        if (!cooldownActive) {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .rpc(
+                        "increment_page_views"
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Erreur compteur de vues :",
+                    error
+                );
+
+            } else {
+
+                /*
+                 * La vue a bien été comptée.
+                 */
+
+                localStorage.setItem(
+                    VIEW_STORAGE_KEY,
+                    String(now)
+                );
+
+
+                /*
+                 * Affiche directement le
+                 * nouveau nombre retourné.
+                 */
+
+                viewCountElement.textContent =
+                    Number(data).toLocaleString(
+                        "fr-FR"
+                    );
+
+
+                return;
+
+            }
+
+        }
+
+
+        /* ========================================
+           GET CURRENT COUNT
+        ======================================== */
+
+        const currentCount =
+            await getViewCount();
+
+
+        if (currentCount !== null) {
+
+            viewCountElement.textContent =
+                currentCount.toLocaleString(
+                    "fr-FR"
+                );
+
+        } else {
+
+            viewCountElement.textContent =
+                "—";
+
+        }
+
+
+        if (cooldownActive) {
 
             console.log(
                 "Vue non comptée : cooldown de 15 minutes actif."
             );
 
-            return;
-
         }
-
-
-        /*
-         * Appel Supabase
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .rpc(
-                    "increment_page_views"
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Erreur compteur de vues :",
-                error
-            );
-
-            viewCountElement.textContent =
-                "—";
-
-            return;
-
-        }
-
-
-        /*
-         * La vue a bien été comptée.
-         * On enregistre maintenant l'heure.
-         */
-
-        localStorage.setItem(
-            VIEW_STORAGE_KEY,
-            String(now)
-        );
-
-
-        /*
-         * Affichage du nombre de vues
-         */
-
-        viewCountElement.textContent =
-            Number(data).toLocaleString(
-                "fr-FR"
-            );
 
 
     } catch (error) {
 
         console.error(
-            "Impossible de contacter Supabase :",
+            "Erreur compteur de vues :",
             error
         );
 
@@ -156,7 +224,6 @@ async function updateViewCounter() {
 
 
 updateViewCounter();
-
 
         /* ========================================
            PARTICLE SYSTEM
