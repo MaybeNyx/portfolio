@@ -2,16 +2,13 @@
    NYX PORTFOLIO
 ======================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
 
 /* ========================================
-   PAGE VIEW COUNTER
+   SUPABASE
 ======================================== */
 
 const SUPABASE_URL =
-    "https://ybmcroqgqlzxgnrvxebm.supabase.co/rest/v1/";
+    "https://ybmcroqgqlzxgnrvxebm.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable_fJ10fiAm2QX3rokEVW7_zw_GiMwOLz6";
@@ -24,87 +21,81 @@ const supabaseClient =
     );
 
 
-const viewCount =
-    document.getElementById(
-        "view-count"
-    );
+/* ========================================
+   DOM READY
+======================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
 
-async function updateViewCounter() {
+        /* ========================================
+           VIEW COUNTER
+        ======================================== */
 
-    if (!viewCount) {
-        return;
-    }
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient.rpc(
-                "increment_views"
+        const viewCountElement =
+            document.getElementById(
+                "view-count"
             );
 
 
-        if (error) {
+        async function updateViewCounter() {
 
-            console.error(
-                "Erreur compteur :",
-                error
-            );
+            if (!viewCountElement) {
+                return;
+            }
 
-            viewCount.textContent =
-                "—";
 
-            return;
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .rpc(
+                            "increment_page_views"
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Erreur compteur de vues :",
+                        error
+                    );
+
+                    viewCountElement.textContent =
+                        "—";
+
+                    return;
+
+                }
+
+
+                viewCountElement.textContent =
+                    Number(data).toLocaleString(
+                        "fr-FR"
+                    );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Impossible de contacter Supabase :",
+                    error
+                );
+
+                viewCountElement.textContent =
+                    "—";
+
+            }
 
         }
 
 
-        const count =
-            Array.isArray(data)
-                ? data[0]
-                : data;
-
-
-        viewCount.textContent =
-            Number(count).toLocaleString(
-                "fr-FR"
-            );
-
-
-        viewCount.classList.add(
-            "updated"
-        );
-
-
-        setTimeout(
-            () => {
-
-                viewCount.classList.remove(
-                    "updated"
-                );
-
-            },
-            450
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Erreur compteur :",
-            error
-        );
-
-        viewCount.textContent =
-            "—";
-
-    }
-
-}
-
-
-updateViewCounter();
+        updateViewCounter();
 
 
         /* ========================================
@@ -116,11 +107,18 @@ updateViewCounter();
                 "particle-canvas"
             );
 
+
+        if (!canvas) {
+            return;
+        }
+
+
         const ctx =
             canvas.getContext("2d");
 
 
         let particles = [];
+
 
         let mouse = {
 
@@ -237,21 +235,13 @@ updateViewCounter();
                 );
 
 
-            const accent =
-                styles.getPropertyValue(
-                    "--accent"
-                ).trim();
-
-
             const accentRGB =
-                styles.getPropertyValue(
-                    "--accent-rgb"
-                ).trim();
+                styles
+                    .getPropertyValue(
+                        "--accent-rgb"
+                    )
+                    .trim();
 
-
-            /* ----------------------------------------
-               UPDATE + DRAW PARTICLES
-            ---------------------------------------- */
 
             particles.forEach(
                 (particle) => {
@@ -331,7 +321,8 @@ updateViewCounter();
 
                         if (
                             distance <
-                            mouse.radius
+                            mouse.radius &&
+                            distance > 0
                         ) {
 
                             const force =
@@ -388,9 +379,9 @@ updateViewCounter();
             );
 
 
-            /* ----------------------------------------
+            /* ========================================
                PARTICLE CONNECTIONS
-            ---------------------------------------- */
+            ======================================== */
 
             for (
                 let i = 0;
@@ -464,9 +455,9 @@ updateViewCounter();
             }
 
 
-            /* ----------------------------------------
+            /* ========================================
                MOUSE CONNECTIONS
-            ---------------------------------------- */
+            ======================================== */
 
             if (
                 mouse.x !== null &&
@@ -590,9 +581,9 @@ updateViewCounter();
         }
 
 
-        /* ----------------------------------------
+        /* ========================================
            MOUSE TRACKING
-        ---------------------------------------- */
+        ======================================== */
 
         window.addEventListener(
             "mousemove",
@@ -655,14 +646,21 @@ updateViewCounter();
             particlesEnabled =
                 false;
 
-            particleToggle.classList.remove(
-                "active"
-            );
 
-            particleToggle.setAttribute(
-                "aria-pressed",
-                "false"
-            );
+            if (particleToggle) {
+
+                particleToggle.classList.remove(
+                    "active"
+                );
+
+
+                particleToggle.setAttribute(
+                    "aria-pressed",
+                    "false"
+                );
+
+            }
+
 
             canvas.classList.add(
                 "disabled"
@@ -671,43 +669,47 @@ updateViewCounter();
         }
 
 
-        particleToggle.addEventListener(
-            "click",
-            () => {
+        if (particleToggle) {
 
-                particlesEnabled =
-                    !particlesEnabled;
+            particleToggle.addEventListener(
+                "click",
+                () => {
 
-
-                particleToggle.classList.toggle(
-                    "active",
-                    particlesEnabled
-                );
+                    particlesEnabled =
+                        !particlesEnabled;
 
 
-                particleToggle.setAttribute(
-                    "aria-pressed",
-                    String(
+                    particleToggle.classList.toggle(
+                        "active",
                         particlesEnabled
-                    )
-                );
+                    );
 
 
-                canvas.classList.toggle(
-                    "disabled",
-                    !particlesEnabled
-                );
+                    particleToggle.setAttribute(
+                        "aria-pressed",
+                        String(
+                            particlesEnabled
+                        )
+                    );
 
 
-                localStorage.setItem(
-                    "nyx-particles",
-                    String(
-                        particlesEnabled
-                    )
-                );
+                    canvas.classList.toggle(
+                        "disabled",
+                        !particlesEnabled
+                    );
 
-            }
-        );
+
+                    localStorage.setItem(
+                        "nyx-particles",
+                        String(
+                            particlesEnabled
+                        )
+                    );
+
+                }
+            );
+
+        }
 
 
         /* ========================================
@@ -719,10 +721,12 @@ updateViewCounter();
                 ".hero"
             );
 
+
         const orbOne =
             document.querySelector(
                 ".orb-one"
             );
+
 
         const orbTwo =
             document.querySelector(
@@ -813,51 +817,59 @@ updateViewCounter();
             );
 
 
-        const observer =
-            new IntersectionObserver(
-                (entries) => {
+        if (
+            "IntersectionObserver"
+            in window
+        ) {
 
-                    entries.forEach(
-                        (entry) => {
+            const observer =
+                new IntersectionObserver(
+                    (entries) => {
 
-                            if (
-                                entry.isIntersecting
-                            ) {
+                        entries.forEach(
+                            (entry) => {
 
-                                entry.target.classList.add(
-                                    "visible"
-                                );
+                                if (
+                                    entry.isIntersecting
+                                ) {
+
+                                    entry.target.classList.add(
+                                        "visible"
+                                    );
 
 
-                                observer.unobserve(
-                                    entry.target
-                                );
+                                    observer.unobserve(
+                                        entry.target
+                                    );
+
+                                }
 
                             }
+                        );
 
-                        }
+                    },
+                    {
+                        threshold: 0.15
+                    }
+                );
+
+
+            animatedElements.forEach(
+                (element) => {
+
+                    element.classList.add(
+                        "animate-on-scroll"
                     );
 
-                },
-                {
-                    threshold: 0.15
+
+                    observer.observe(
+                        element
+                    );
+
                 }
             );
 
-
-        animatedElements.forEach(
-            (element) => {
-
-                element.classList.add(
-                    "animate-on-scroll"
-                );
-
-                observer.observe(
-                    element
-                );
-
-            }
-        );
+        }
 
 
         /* ========================================
@@ -911,6 +923,7 @@ updateViewCounter();
 
                                     button.textContent =
                                         originalText;
+
 
                                     button.classList.remove(
                                         "copied"
@@ -1147,9 +1160,11 @@ updateViewCounter();
             "color: #9c7cff; font-size: 20px; font-weight: bold;"
         );
 
+
         console.log(
             "Welcome to Nyx's portfolio."
         );
+
 
     }
 );
